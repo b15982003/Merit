@@ -17,4 +17,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    companion object{
+        const val MERIT_IMAGE_SMALL_SIZE = 140
+        const val MERIT_IMAGE_BIG_SIZE = 150
+        const val SHAPE_VOICE_ENTER_TIME = 2000
+        const val SHAPE_VOICE_EXIT_TIME = 1000
+    }
 }
