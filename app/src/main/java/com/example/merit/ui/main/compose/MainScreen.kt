@@ -41,6 +41,7 @@ import com.example.merit.MainActivity.Companion.MERIT_IMAGE_SMALL_SIZE
 import com.example.merit.MainActivity.Companion.SHAPE_VOICE_ENTER_TIME
 import com.example.merit.MainActivity.Companion.SHAPE_VOICE_EXIT_TIME
 import com.example.merit.R
+import com.example.merit.ui.component.AdView
 import com.example.merit.ui.theme.backgroundGray
 import com.example.merit.utils.AudioPlayer
 import kotlinx.coroutines.delay
@@ -82,6 +83,9 @@ fun MainScreen() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            AdView()
+        },
         content = { paddingValues ->
             Column(
                 modifier = Modifier
