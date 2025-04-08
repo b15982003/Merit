@@ -1,4 +1,4 @@
-package com.example.merit.ui.component
+package com.morefun.merit.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable

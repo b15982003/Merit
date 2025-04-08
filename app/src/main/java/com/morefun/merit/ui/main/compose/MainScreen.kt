@@ -1,4 +1,4 @@
-package com.example.merit.ui.main.compose
+package com.morefun.merit.ui.main.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -36,14 +36,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.merit.MainActivity.Companion.MERIT_IMAGE_BIG_SIZE
-import com.example.merit.MainActivity.Companion.MERIT_IMAGE_SMALL_SIZE
-import com.example.merit.MainActivity.Companion.SHAPE_VOICE_ENTER_TIME
-import com.example.merit.MainActivity.Companion.SHAPE_VOICE_EXIT_TIME
-import com.example.merit.R
-import com.example.merit.ui.component.AdView
-import com.example.merit.ui.theme.backgroundGray
-import com.example.merit.utils.AudioPlayer
+import com.morefun.merit.MainActivity.Companion.MERIT_IMAGE_BIG_SIZE
+import com.morefun.merit.MainActivity.Companion.MERIT_IMAGE_SMALL_SIZE
+import com.morefun.merit.MainActivity.Companion.SHAPE_VOICE_ENTER_TIME
+import com.morefun.merit.MainActivity.Companion.SHAPE_VOICE_EXIT_TIME
+import com.morefun.merit.ui.component.AdView
+import com.morefun.merit.ui.theme.backgroundGray
+import com.morefun.merit.utils.AudioPlayer
+import com.morefun.merit.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

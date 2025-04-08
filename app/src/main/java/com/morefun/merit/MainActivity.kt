@@ -1,11 +1,11 @@
-package com.example.merit
+package com.morefun.merit
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.merit.ui.main.compose.MainScreen
-import com.example.merit.ui.theme.MeritTheme
+import com.morefun.merit.ui.main.compose.MainScreen
+import com.morefun.merit.ui.theme.MeritTheme
 import com.google.android.gms.ads.MobileAds
 
 class MainActivity : ComponentActivity() {
