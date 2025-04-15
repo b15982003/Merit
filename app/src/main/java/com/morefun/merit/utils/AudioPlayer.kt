@@ -1,8 +1,8 @@
-package com.example.merit.utils
+package com.morefun.merit.utils
 
 import android.content.Context
 import android.media.MediaPlayer
-import com.example.merit.R
+import com.morefun.merit.R
 
 class AudioPlayer(private val context: Context) {
     private var mediaPlayer: MediaPlayer? = null

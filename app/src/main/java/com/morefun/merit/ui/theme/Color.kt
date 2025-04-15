@@ -1,4 +1,4 @@
-package com.example.merit.ui.theme
+package com.morefun.merit.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

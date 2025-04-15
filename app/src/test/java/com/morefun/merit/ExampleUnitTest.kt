@@ -1,4 +1,4 @@
-package com.example.merit
+package com.morefun.merit
 
 import org.junit.Test
 
