@@ -6,13 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.morefun.merit.ui.main.compose.MainScreen
 import com.morefun.merit.ui.theme.MeritTheme
-import com.google.android.gms.ads.MobileAds
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 廣告
-        MobileAds.initialize(this)
         enableEdgeToEdge()
         setContent {
             MeritTheme {
