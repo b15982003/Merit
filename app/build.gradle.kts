@@ -12,8 +12,8 @@ android {
         applicationId = "com.morefun.merit"
         minSdk = 30
         //noinspection OldTargetApi
-        targetSdk = 34
-        versionCode = 5
+        targetSdk = 36
+        versionCode = 6
         versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
