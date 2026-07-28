@@ -6,15 +6,15 @@ plugins {
 
 android {
     namespace = "com.morefun.merit"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.morefun.merit"
         minSdk = 30
         //noinspection OldTargetApi
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 6
-        versionName = "1.0.3"
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

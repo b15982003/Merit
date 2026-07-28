@@ -9,6 +9,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.morefun.merit.MainActivity.Companion.COMBO_INTERVAL
+import com.morefun.merit.MainActivity.Companion.COMBO_TRIGGER_TIME
 import com.morefun.merit.MainActivity.Companion.MERIT_IMAGE_BIG_SIZE
 import com.morefun.merit.MainActivity.Companion.MERIT_IMAGE_SMALL_SIZE
 import com.morefun.merit.MainActivity.Companion.SHAPE_VOICE_ENTER_TIME
@@ -44,8 +47,11 @@ import com.morefun.merit.ui.component.AdView
 import com.morefun.merit.ui.theme.backgroundGray
 import com.morefun.merit.utils.AudioPlayer
 import com.morefun.merit.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun MainScreen() {
@@ -120,11 +126,10 @@ fun MainScreen() {
                             detectTapGestures(
                                 onPress = {
                                     expanded = true
-                                    awaitRelease()
-                                    expanded = false
-                                    scope.launch {
+                                    detectComboPress(scope) {
                                         showNum = (showNum % 10) + 1
                                     }
+                                    expanded = false
                                 }
                             )
                         },
@@ -134,6 +139,34 @@ fun MainScreen() {
             }
         }
     )
+}
+
+/**
+ * 處理木魚的按壓手勢：
+ * - 短按放開：敲一次（[onHit]）。
+ * - 長按超過 [COMBO_TRIGGER_TIME]：進入連擊模式，每隔 [COMBO_INTERVAL] 自動敲一次，放開才停止。
+ */
+private suspend fun PressGestureScope.detectComboPress(
+    scope: CoroutineScope,
+    onHit: () -> Unit,
+) {
+    var comboMode = false
+
+    // 撐過門檻時間就開始連擊，放開時再取消這個協程
+    val comboJob = scope.launch {
+        delay(COMBO_TRIGGER_TIME.milliseconds)
+        comboMode = true
+        while (isActive) {
+            onHit()
+            delay(COMBO_INTERVAL.milliseconds)
+        }
+    }
+
+    awaitRelease()
+    comboJob.cancel()
+
+    // 沒進入連擊（單純短按）才補一次，避免和連擊重複計算
+    if (!comboMode) onHit()
 }
 
 @Composable
