@@ -9,8 +9,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.PressGestureScope
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -123,14 +124,10 @@ fun MainScreen() {
                         .height(if (expanded) MERIT_IMAGE_SMALL_SIZE.dp else MERIT_IMAGE_BIG_SIZE.dp)
                         .width(if (expanded) MERIT_IMAGE_SMALL_SIZE.dp else MERIT_IMAGE_BIG_SIZE.dp)
                         .pointerInput(Unit) {
-                            detectTapGestures(
-                                onPress = {
-                                    expanded = true
-                                    detectComboPress(scope) {
-                                        showNum = (showNum % 10) + 1
-                                    }
-                                    expanded = false
-                                }
+                            detectComboPress(
+                                scope = scope,
+                                onPressChange = { expanded = it },
+                                onHit = { showNum = (showNum % 10) + 1 },
                             )
                         },
                     painter = painterResource(R.drawable.ic_wooden_fish),
@@ -144,29 +141,56 @@ fun MainScreen() {
 /**
  * 處理木魚的按壓手勢：
  * - 短按放開：敲一次（[onHit]）。
- * - 長按超過 [COMBO_TRIGGER_TIME]：進入連擊模式，每隔 [COMBO_INTERVAL] 自動敲一次，放開才停止。
+ * - 長按超過 [COMBO_TRIGGER_TIME]：進入連擊模式，每隔 [COMBO_INTERVAL] 自動敲一次。
+ * - 放開手指、或手指滑出圖片範圍，都會立即停止連擊。
+ *
+ * 註：不使用 detectTapGestures，因為它的 awaitRelease() 只在「手指真正離開螢幕」
+ * 或手勢被其他元件攔截時才會回傳；手指滑出範圍但仍按著螢幕時不會觸發，
+ * 導致連擊停不下來。這裡改用自訂手勢迴圈，額外偵測手指是否移出邊界。
  */
-private suspend fun PressGestureScope.detectComboPress(
+private suspend fun PointerInputScope.detectComboPress(
     scope: CoroutineScope,
+    onPressChange: (Boolean) -> Unit,
     onHit: () -> Unit,
 ) {
-    var comboMode = false
+    awaitEachGesture {
+        val down = awaitFirstDown()
+        onPressChange(true)
 
-    // 撐過門檻時間就開始連擊，放開時再取消這個協程
-    val comboJob = scope.launch {
-        delay(COMBO_TRIGGER_TIME.milliseconds)
-        comboMode = true
-        while (isActive) {
-            onHit()
-            delay(COMBO_INTERVAL.milliseconds)
+        var comboMode = false
+        // 撐過門檻時間就開始連擊，結束時再取消這個協程
+        val comboJob = scope.launch {
+            delay(COMBO_TRIGGER_TIME.milliseconds)
+            comboMode = true
+            while (isActive) {
+                onHit()
+                delay(COMBO_INTERVAL.milliseconds)
+            }
         }
+
+        // 在範圍內正常放開才算單擊；滑出範圍則視為取消
+        var releasedInBounds = false
+        try {
+            while (true) {
+                val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id }
+                    ?: break
+                if (!change.pressed) {
+                    releasedInBounds = true
+                    break
+                }
+                val position = change.position
+                val outOfBounds = position.x < 0f || position.y < 0f ||
+                    position.x > size.width || position.y > size.height
+                if (outOfBounds) break
+            }
+        } finally {
+            comboJob.cancel()
+            onPressChange(false)
+        }
+
+        // 沒進入連擊、且是在範圍內放開的單純短按才補一次，避免和連擊重複計算
+        if (!comboMode && releasedInBounds) onHit()
     }
-
-    awaitRelease()
-    comboJob.cancel()
-
-    // 沒進入連擊（單純短按）才補一次，避免和連擊重複計算
-    if (!comboMode) onHit()
 }
 
 @Composable
